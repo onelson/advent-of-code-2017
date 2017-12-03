@@ -1,4 +1,4 @@
-//! Day 2: Spreadsheet Checksums
+//! Day 2: Corruption Checksum
 //!
 //! As you walk through the door, a glowing humanoid shape yells in your direction. "You there!
 //! Your state appears to be idle. Come help us repair the corruption in this spreadsheet - if we
