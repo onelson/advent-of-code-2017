@@ -8,7 +8,7 @@ fn main() {
     let args = env::args().collect::<Vec<String>>();
     let input = &args[1];
 
-    let result = captcha::solve(&input);
+    let result = captcha::solve_shift_1(&input);
 
     println!("{}", result);
 }
