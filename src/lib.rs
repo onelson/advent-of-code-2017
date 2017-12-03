@@ -1,7 +1,50 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+
+pub mod captcha {
+    //! Day 1: Captcha
+
+    pub fn shift_chars(input: &str) -> String {
+        let mut shifted = String::from(&input[1..]);
+        shifted.push(input.chars().next().unwrap());
+        shifted
+    }
+
+    pub fn solve(input: &str) -> u32 {
+        let shifted = shift_chars(input);
+        input
+            .chars()
+            .zip(shifted.chars())
+            .filter(|t| t.0 == t.1)
+            .fold(0, |acc, t| acc + t.0.to_string().parse::<u32>().unwrap())
+    }
+
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn shift_abc() {
+            assert_eq!(&shift_chars("abc"), "bca");
+        }
+
+        #[test]
+        fn solve_1122() {
+            assert_eq!(solve("1122"), 3);
+        }
+
+        #[test]
+        fn solve_1111() {
+            assert_eq!(solve("1111"), 4);
+        }
+
+        #[test]
+        fn solve_1234() {
+            assert_eq!(solve("1234"), 0);
+        }
+
+        #[test]
+        fn solve_91212129() {
+            assert_eq!(solve("91212129"), 9);
+        }
     }
 }
