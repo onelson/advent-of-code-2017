@@ -64,9 +64,32 @@ pub fn parse_cells(input: &str) -> Vec<Vec<u32>> {
         .collect()
 }
 
-pub fn calculate(input: &[Vec<u32>]) -> u32 {
+pub fn calculate_min_max(input: &[Vec<u32>]) -> u32 {
     input.iter().fold(0, |acc, row| {
         acc + (row.iter().max().unwrap() - row.iter().min().unwrap())
+    })
+}
+
+pub fn calculate_div(input: &[Vec<u32>]) -> u32 {
+    // We're looking for a pair of numbers that can be divided without a remainder.
+    // I assume we only expect one such pair per row...
+
+    // This is going to be fairly high complexity -- O(n^2)? Something like that...
+    // Woof this is gross. Will plan to revisit.
+    input.iter().fold(0, |acc, row| {
+        let pair = row.iter()
+            .map(|x| {
+                let candidate = row.iter().filter(|y| *y != x).find(|y| x % *y == 0);
+                candidate.map(|y| (x, y))
+            })
+            .filter(|o| o.is_some())
+            .next();
+
+        let result = match pair {
+            Some(Some((a, b))) => (a / b),
+            _ => 0,
+        };
+        acc + result
     })
 }
 
@@ -76,9 +99,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_example() {
+    fn test_example_1() {
         let input = vec![vec![5, 1, 9, 5], vec![7, 5, 3], vec![2, 4, 6, 8]];
 
-        assert_eq!(calculate(&input), 18);
+        assert_eq!(calculate_min_max(&input), 18);
+    }
+
+    #[test]
+    fn test_example_2() {
+        let input = vec![vec![5, 9, 2, 8], vec![9, 4, 7, 3], vec![3, 8, 6, 5]];
+
+        assert_eq!(calculate_div(&input), 9);
     }
 }

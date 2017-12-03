@@ -11,7 +11,7 @@ fn main() {
     let data = checksum::read_file(fp);
     let cells = checksum::parse_cells(&data);
 
-    let result = checksum::calculate_min_max(&cells);
+    let result = checksum::calculate_div(&cells);
 
     println!("{}", result);
 }
