@@ -10,11 +10,11 @@ fn shift_chars(input: &str) -> String {
 
 fn solve(input: &str) -> u32 {
     let shifted = shift_chars(input);
-    input.chars()
+    input
+        .chars()
         .zip(shifted.chars())
         .filter(|t| t.0 == t.1)
-        .map(|t| t.0.to_string().parse::<u32>().unwrap())
-        .sum()
+        .fold(0, |acc, t| acc + t.0.to_string().parse::<u32>().unwrap())
 }
 
 
