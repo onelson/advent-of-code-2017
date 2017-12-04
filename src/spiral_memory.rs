@@ -68,8 +68,8 @@ impl Iterator for Walker {
             Direction::East => {
                 if self.inner_bounds.1.x < self.pos.x {
                     self.heading = Direction::North;
-                    self.pos.y += 1;
                     self.inner_bounds.1 = self.pos;
+                    self.pos.y += 1;
                 } else {
                     self.pos.x += 1;
                 }
@@ -95,8 +95,8 @@ impl Iterator for Walker {
             Direction::West => {
                 if self.inner_bounds.0.x > self.pos.x {
                     self.heading = Direction::South;
-                    self.pos.y -= 1;
                     self.inner_bounds.0 = self.pos;
+                    self.pos.y -= 1;
                 } else {
                     self.pos.x -= 1;
                 }
@@ -109,7 +109,7 @@ impl Iterator for Walker {
             Direction::South => {
                 if self.inner_bounds.1.y > self.pos.y {
                     self.heading = Direction::East;
-                    self.pos.x -= 1;
+                    self.pos.x += 1;
                 } else {
                     self.pos.y -= 1;
                 }
@@ -204,7 +204,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn walk_1024() {
         assert_eq!(walk(1024), 31);
     }
