@@ -152,7 +152,6 @@ impl Iterator for Walker {
                 (self.value, self.pos)
             }
         };
-        println!("{:?}", self);
         Some(item)
     }
 }
