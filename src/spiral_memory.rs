@@ -26,3 +26,187 @@
 //!
 //! How many steps are required to carry the data from the square identified in your puzzle input
 //! all the way to the access port?
+
+#[derive(Copy, Clone, Debug)]
+enum Direction { North, South, East, West }
+
+#[derive(Copy, Clone, Debug)]
+struct Pos { x: i64, y: i64 }
+
+impl Pos {
+    fn zero() -> Pos { Pos { x: 0, y: 0 } }
+}
+
+#[derive(Debug)]
+struct Walker {
+    pos: Pos,
+    value: u64,
+    /// top left, bottom right
+    inner_bounds: (Pos, Pos),
+    heading: Direction
+}
+
+impl Walker {
+    fn new() -> Walker {
+        Walker {
+            pos: Pos::zero(),
+            value: 1,
+            inner_bounds: (Pos::zero(), Pos::zero()),
+            heading: Direction::East
+        }
+    }
+}
+
+
+impl Iterator for Walker {
+    type Item = (u64, Pos);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let item = match self.heading {
+
+
+            Direction::East => {
+                if self.inner_bounds.1.x < self.pos.x {
+                    self.heading = Direction::North;
+                    self.pos.y += 1;
+                    self.inner_bounds.1 = self.pos;
+                } else {
+                    self.pos.x += 1;
+                }
+
+                self.value += 1;
+
+                (self.value, self.pos)
+            }
+
+            Direction::North => {
+                if self.inner_bounds.0.y < self.pos.y {
+                    self.heading = Direction::West;
+                    self.pos.x -= 1;
+                } else {
+                    self.pos.y += 1;
+                }
+
+                self.value += 1;
+
+                (self.value, self.pos)
+            }
+
+            Direction::West => {
+                if self.inner_bounds.0.x > self.pos.x {
+                    self.heading = Direction::South;
+                    self.pos.y -= 1;
+                    self.inner_bounds.0 = self.pos;
+                } else {
+                    self.pos.x -= 1;
+                }
+
+                self.value += 1;
+
+                (self.value, self.pos)
+            }
+
+            Direction::South => {
+                if self.inner_bounds.1.y > self.pos.y {
+                    self.heading = Direction::East;
+                    self.pos.x -= 1;
+                } else {
+                    self.pos.y -= 1;
+                }
+
+                self.value += 1;
+
+                (self.value, self.pos)
+            }
+        };
+        println!("{:?}", self);
+        Some(item)
+    }
+}
+
+pub fn walk(n: u64) -> u64 {
+    if n < 2 { 0 }
+    else {
+        let (_, pos) = Walker::new().find(|v| v.0 == n).unwrap();
+        println!("{} = {:?}", n, pos);
+        (pos.x.abs() + pos.y.abs()) as u64
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn walk_1() {
+        assert_eq!(walk(1), 0);
+    }
+
+    #[test]
+    fn walk_2() {
+        assert_eq!(walk(2), 1);
+    }
+
+    #[test]
+    fn walk_3() {
+        assert_eq!(walk(3), 2);
+    }
+
+    #[test]
+    fn walk_4() {
+        assert_eq!(walk(4), 1);
+    }
+
+    #[test]
+    fn walk_5() {
+        assert_eq!(walk(5), 2);
+    }
+
+    #[test]
+    fn walk_6() {
+        assert_eq!(walk(6), 1);
+    }
+
+    #[test]
+    fn walk_7() {
+        assert_eq!(walk(7), 2);
+    }
+
+    #[test]
+    fn walk_8() {
+        assert_eq!(walk(8), 1);
+    }
+
+    #[test]
+    fn walk_9() {
+        assert_eq!(walk(9), 2);
+    }
+
+    #[test]
+    fn walk_10() {
+        assert_eq!(walk(10), 3);
+    }
+
+    #[test]
+    fn walk_12() {
+        assert_eq!(walk(12), 3);
+    }
+
+    #[test]
+    fn walk_23() {
+        assert_eq!(walk(23), 2);
+    }
+
+    #[test]
+    fn walk_24() {
+        assert_eq!(walk(24), 3);
+    }
+
+    #[test]
+    #[ignore]
+    fn walk_1024() {
+        assert_eq!(walk(1024), 31);
+    }
+
+}
