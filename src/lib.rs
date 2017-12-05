@@ -3,6 +3,7 @@ pub mod captcha;
 pub mod checksum;
 pub mod spiral_memory;
 pub mod passphrases;
+pub mod trampoline_maze;
 
 use std::path::Path;
 use std::fs::File;
