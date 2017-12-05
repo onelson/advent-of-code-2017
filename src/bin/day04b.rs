@@ -9,7 +9,7 @@ fn main() {
     let fp = &args[1];
     println!("reading spreadsheet: {}", fp);
     let data = aoc::read_file(fp);
-    let result = passphrases::validate_dupes(&data);
+    let result = passphrases::validate_anagrams(&data);
 
     println!("{}", result);
 }
