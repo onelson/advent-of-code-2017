@@ -42,16 +42,6 @@
 //! In this example, the sum of the results would be 4 + 3 + 2 = 9.
 
 
-use std::path::Path;
-use std::fs::File;
-use std::io::Read;
-
-pub fn read_file<P: AsRef<Path>>(path: P) -> String {
-    let mut file = File::open(path).unwrap();
-    let mut buf = String::new();
-    let _ = file.read_to_string(&mut buf).unwrap();
-    buf
-}
 
 pub fn parse_cells(input: &str) -> Vec<Vec<u32>> {
     input

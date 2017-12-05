@@ -8,7 +8,7 @@ fn main() {
     let args = env::args().collect::<Vec<String>>();
     let fp = &args[1];
     println!("reading spreadsheet: {}", fp);
-    let data = checksum::read_file(fp);
+    let data = aoc::read_file(fp);
     let cells = checksum::parse_cells(&data);
 
     let result = checksum::calculate_min_max(&cells);

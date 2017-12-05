@@ -1,7 +1,7 @@
 extern crate aoc;
 
 use std::env;
-use aoc::checksum;
+use aoc::passphrases;
 
 
 fn main() {
@@ -9,9 +9,7 @@ fn main() {
     let fp = &args[1];
     println!("reading spreadsheet: {}", fp);
     let data = aoc::read_file(fp);
-    let cells = checksum::parse_cells(&data);
-
-    let result = checksum::calculate_div(&cells);
+    let result = passphrases::validate(&data);
 
     println!("{}", result);
 }
