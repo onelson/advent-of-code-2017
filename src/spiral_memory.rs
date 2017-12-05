@@ -96,20 +96,17 @@ impl Iterator for Walker {
     type Item = (u64, Pos);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let item = match self.heading {
+        match self.heading {
 
             Direction::East => {
                 if self.inner_bounds.1.x < self.pos.x {
                     self.heading = Direction::North;
+                    // update the bottom right pos when turning from East to North
                     self.inner_bounds.1 = self.pos;
                     self.pos.y += 1;
                 } else {
                     self.pos.x += 1;
                 }
-
-                self.value += 1;
-
-                (self.value, self.pos)
             }
 
             Direction::North => {
@@ -119,24 +116,17 @@ impl Iterator for Walker {
                 } else {
                     self.pos.y += 1;
                 }
-
-                self.value += 1;
-
-                (self.value, self.pos)
             }
 
             Direction::West => {
                 if self.inner_bounds.0.x > self.pos.x {
                     self.heading = Direction::South;
+                    // update the top left pos when turning from West to South
                     self.inner_bounds.0 = self.pos;
                     self.pos.y -= 1;
                 } else {
                     self.pos.x -= 1;
                 }
-
-                self.value += 1;
-
-                (self.value, self.pos)
             }
 
             Direction::South => {
@@ -146,13 +136,12 @@ impl Iterator for Walker {
                 } else {
                     self.pos.y -= 1;
                 }
-
-                self.value += 1;
-
-                (self.value, self.pos)
             }
         };
-        Some(item)
+
+        self.value += 1;
+
+        Some((self.value, self.pos))
     }
 }
 
