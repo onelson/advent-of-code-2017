@@ -4,6 +4,7 @@ pub mod checksum;
 pub mod spiral_memory;
 pub mod passphrases;
 pub mod trampoline_maze;
+pub mod memory_reallocation;
 
 use std::path::Path;
 use std::fs::File;
