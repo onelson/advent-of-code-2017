@@ -9,9 +9,9 @@ fn main() {
     let fp = &args[1];
 
     println!("reading instruction set: {}", fp);
-
+    println!("This might get weird...");
     let data = aoc::read_file(fp);
     let mut instructions = trampoline_maze::parse_instructions(&data);
-    let result = trampoline_maze::execute(&mut instructions, trampoline_maze::jump);
+    let result = trampoline_maze::execute(&mut instructions, trampoline_maze::jump_strange);
     println!("{}", result);
 }

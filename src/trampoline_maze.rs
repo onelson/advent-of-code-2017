@@ -35,14 +35,39 @@
 //!
 //! How many steps does it take to reach the exit?
 //!
+//! --- Part Two ---
+//!
+//! Now, the jumps are even stranger: after each jump, if the offset was three or more, instead
+//! decrease it by 1. Otherwise, increase it by 1 as before.
+//!
+//! Using this rule with the above example, the process now takes 10 steps, and the offset values
+//! after finding the exit are left as 2 3 2 3 -1.
+//!
+//! How many steps does it now take to reach the exit?
+//!
 
 pub fn parse_instructions(data: &str) -> Vec<i64> {
     data.lines().map(|x| x.parse::<i64>().unwrap()).collect()
 }
 
+/// like a regular jump, but changes direction at a certain point
+pub fn jump_strange(idx: usize, xs: &mut [i64]) -> Option<usize> {
+    // calculate where we will land first
+    let dest = (xs[idx] + idx as i64) as usize;
+
+    if xs[idx] > 2 {
+        xs[idx] -= 1
+    } else {
+        xs[idx] += 1
+    }
+
+    // check to see if the dest is out of bounds or not
+    if dest < xs.len() { Some(dest) } else { None }
+}
+
 
 /// updates the value of the cell at `idx` returns the updated position
-fn jump(idx: usize, xs: &mut [i64]) -> Option<usize> {
+pub fn jump(idx: usize, xs: &mut [i64]) -> Option<usize> {
     // calculate where we will land first
     let dest = (xs[idx] + idx as i64) as usize;
     xs[idx] += 1;
@@ -50,15 +75,18 @@ fn jump(idx: usize, xs: &mut [i64]) -> Option<usize> {
     if dest < xs.len() { Some(dest) } else { None }
 }
 
-pub fn execute(instructions: &mut [i64]) -> u64 {
-    let mut destination = jump(0, instructions);
+pub fn execute<F: FnMut(usize, &mut [i64]) -> Option<usize>>(
+    instructions: &mut [i64],
+    mut jumper: F,
+) -> u64 {
+    let mut destination = jumper(0, instructions);
 
     // only increment the moves if we have somewhere to go?
     let mut moves = if destination.is_some() { 1 } else { 0 };
 
     while let Some(idx) = destination {
         moves += 1;
-        destination = jump(idx, instructions);
+        destination = jumper(idx, instructions);
     }
 
     moves
@@ -96,9 +124,17 @@ mod tests {
     }
 
     #[test]
-    fn test_example_by_execute() {
+    fn test_example1_by_execute() {
         let mut instructions = vec![0, 3, 0, 1, -3];
-        assert_eq!(execute(&mut instructions), 5);
+        assert_eq!(execute(&mut instructions, jump), 5);
+    }
+
+
+    #[test]
+    fn test_example2_by_execute() {
+        let mut instructions = vec![0, 3, 0, 1, -3];
+        assert_eq!(execute(&mut instructions, jump_strange), 10);
+        assert_eq!(instructions, vec![2, 3, 2, 3, -1]);
     }
 
 }
