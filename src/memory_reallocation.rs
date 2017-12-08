@@ -62,14 +62,20 @@ pub fn redistribute(memory: &MemoryBanks) -> MemoryBanks {
         .find(|&t| t.1 == initial_value)
         .unwrap()
         .0;
-
+    println!("Selected index: {}", idx);
     let mut buf = memory.clone();
+    buf[idx] = 0;
 
+    // TODO: need to decide if splitting is needed, and factor to the 
+    // point where the while loop works on a single collection.
+    //
+    // If `idx + 1` is eq to the len of the vec, then we can just use `buf` 
+    // as-is. Otherwise, we do a split at `idx + 1` and concat the tail+head 
+    // together.
     let (head, tail) = {
+        // FIXME: if there's gonna be a split, it has to be at `idx + 1`.
         buf.split_at_mut(idx)
     };
-
-    tail[0] = 0;
 
     let mut value = initial_value.to_owned();
 
