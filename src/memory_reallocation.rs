@@ -46,6 +46,16 @@
 //! Given the initial block counts in your puzzle input, how many redistribution cycles must be
 //! completed before a configuration is produced that has been seen before?
 //!
+//! --- Part Two ---
+//! Out of curiosity, the debugger would also like to know the size of the loop: starting from a
+//! state that has already been seen, how many block redistribution cycles must be performed before
+//! that same state is seen again?
+//!
+//! In the example above, 2 4 1 2 is seen again after four cycles, and so the answer in that
+//! example would be 4.
+//!
+//! How many cycles are in the infinite loop that arises from the configuration in your puzzle
+//! input?
 
 
 type Value = u32;
@@ -111,13 +121,42 @@ pub fn execute(data: MemoryBanks) -> u32 {
     }
     println!();
 
-    assert!(
-        history.len() < 100_000,
-        "quitting after hitting the iteration limit"
-    );
-
     //    println!("{:?}", history);
     history.len() as u32
+}
+
+pub fn execute_deeper(data: MemoryBanks) -> u32 {
+
+    let next_gen = redistribute(data.clone());
+    let mut history: Vec<MemoryBanks> = vec![data.clone(), next_gen.clone()];
+
+    println!();
+    loop {
+        print!(".");
+        let x = redistribute(history.last().cloned().unwrap());
+        if history.contains(&x) {
+            history.push(x);
+            break;
+        }
+        history.push(x);
+    }
+
+    let mut history = vec![history.last().unwrap().to_owned()];
+
+    loop {
+        print!(".");
+        let x = redistribute(history.last().cloned().unwrap());
+        if history.contains(&x) {
+            history.push(x);
+            break;
+        }
+        history.push(x);
+    }
+
+    println!();
+
+    //    println!("{:?}", history);
+    (history.len() - 1) as u32
 }
 
 #[cfg(test)]
@@ -158,6 +197,10 @@ mod tests {
     #[test]
     fn test_execute() {
         assert_eq!(execute(vec![0, 2, 7, 0]), 5);
+    }
+    #[test]
+    fn test_execute_deep() {
+        assert_eq!(execute_deeper(vec![0, 2, 7, 0]), 4);
     }
 
 }
