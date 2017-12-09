@@ -51,7 +51,7 @@
 type Value = u32;
 type MemoryBanks = Vec<Value>;
 
-pub fn redistribute(memory: &MemoryBanks) -> MemoryBanks {
+pub fn redistribute(memory: MemoryBanks) -> MemoryBanks {
     // at first I thought to search for the max and get the index
     // via `.enumerate().max_by()` however, `.max_by()` returns the
     // *last* match in the event of a tie, and we want the first.
@@ -62,56 +62,62 @@ pub fn redistribute(memory: &MemoryBanks) -> MemoryBanks {
         .find(|&t| t.1 == initial_value)
         .unwrap()
         .0;
-    println!("Selected index: {}", idx);
+    //    println!();
+    //    println!("Selected cell: {}", idx + 1);
     let mut buf = memory.clone();
+    //    println!("orig: {:?}", buf);
     buf[idx] = 0;
 
-    // TODO: need to decide if splitting is needed, and factor to the 
-    // point where the while loop works on a single collection.
-    //
-    // If `idx + 1` is eq to the len of the vec, then we can just use `buf` 
-    // as-is. Otherwise, we do a split at `idx + 1` and concat the tail+head 
-    // together.
-    let (head, tail) = {
-        // FIXME: if there's gonna be a split, it has to be at `idx + 1`.
-        buf.split_at_mut(idx)
+    let indicies = {
+        let mut range: Vec<usize> = (0..buf.len()).collect();
+        let (head, tail) = range.split_at_mut(idx + 1);
+        let mut v = vec![];
+        v.extend_from_slice(tail);
+        v.extend_from_slice(head);
+        //        println!("tail, head: {:?} | {:?}", tail, head);
+        v
     };
 
     let mut value = initial_value.to_owned();
 
-    while value > 0 {
-
-        for cell in tail.iter_mut() {
+    if value > 0 {
+        for z in indicies.iter().cycle() {
             value -= 1;
-            *cell += 1;
-            if value == 0 { break ;}
-        }
+            buf[*z] += 1;
+            if value == 0 {
+                break;
+            }
 
-        for cell in head.iter_mut() {
-            value -= 1;
-            *cell += 1;
-            if value == 0 { break ;}
         }
-
     }
 
-    let mut shuffled = head.to_vec();
-    shuffled.extend(tail.iter().cloned());
-    shuffled
+    //    println!("redist:: {:?}", buf);
+    buf
 }
 
 pub fn execute(data: MemoryBanks) -> u32 {
-    let mut history: Vec<MemoryBanks> = vec![data.clone()];
 
-    let next_gen = redistribute(&data);
-    let mut iterations = 1;
+    let next_gen = redistribute(data.clone());
+    let mut history: Vec<MemoryBanks> = vec![data.clone(), next_gen.clone()];
 
-    while !history.contains(&next_gen) {
-        let next_gen = redistribute(&next_gen);
-        history.push(next_gen);
-        iterations += 1;
+    println!();
+    loop {
+        print!(".");
+        let x = redistribute(history.last().cloned().unwrap());
+        if history.contains(&x) {
+            break;
+        }
+        history.push(x);
     }
-    iterations
+    println!();
+
+    assert!(
+        history.len() < 100_000,
+        "quitting after hitting the iteration limit"
+    );
+
+    //    println!("{:?}", history);
+    history.len() as u32
 }
 
 #[cfg(test)]
@@ -122,30 +128,36 @@ mod tests {
     #[test]
     fn test_redist_1() {
         let input = vec![0, 2, 7, 0];
-        assert_eq!(redistribute(&input), vec![2, 4, 1, 2])
+        assert_eq!(redistribute(input), vec![2, 4, 1, 2])
     }
 
     #[test]
     fn test_redist_2() {
         let input = vec![2, 4, 1, 2];
-        assert_eq!(redistribute(&input), vec![3, 1, 2, 3])
+        assert_eq!(redistribute(input), vec![3, 1, 2, 3])
     }
 
     #[test]
     fn test_redist_3() {
         let input = vec![3, 1, 2, 3];
-        assert_eq!(redistribute(&input), vec![0, 2, 3, 4])
+        assert_eq!(redistribute(input), vec![0, 2, 3, 4])
     }
 
     #[test]
     fn test_redist_4() {
         let input = vec![0, 2, 3, 4];
-        assert_eq!(redistribute(&input), vec![1, 3, 4, 1])
+        assert_eq!(redistribute(input), vec![1, 3, 4, 1])
     }
 
     #[test]
     fn test_redist_5() {
         let input = vec![1, 3, 4, 1];
-        assert_eq!(redistribute(&input), vec![2, 4, 1, 2])
+        assert_eq!(redistribute(input), vec![2, 4, 1, 2])
     }
+
+    #[test]
+    fn test_execute() {
+        assert_eq!(execute(vec![0, 2, 7, 0]), 5);
+    }
+
 }

@@ -11,6 +11,9 @@ fn main() {
     println!("reading memory banks: {}", fp);
 
     let data = aoc::read_file(fp);
-
-    unimplemented!();
+    let memory = data.split_whitespace()
+        .map(|v| v.parse::<u32>().unwrap())
+        .collect();
+    let result = memory_reallocation::execute(memory);
+    println!("iterations: {}", result);
 }
