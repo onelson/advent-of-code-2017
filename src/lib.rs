@@ -5,6 +5,7 @@ pub mod spiral_memory;
 pub mod passphrases;
 pub mod trampoline_maze;
 pub mod memory_reallocation;
+pub mod recursive_circus;
 
 use std::path::Path;
 use std::fs::File;
