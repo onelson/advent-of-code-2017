@@ -11,5 +11,10 @@ fn main() {
 
     let data = aoc::read_file(fp);
 
-    unimplemented!();
+
+    let node_map = recursive_circus::build_node_map(&data);
+
+    let result = recursive_circus::find_root(&node_map);
+
+    println!("{:?}", result);
 }
