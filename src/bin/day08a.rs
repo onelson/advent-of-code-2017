@@ -1,7 +1,7 @@
 extern crate aoc;
 
 use std::env;
-use aoc::recursive_circus;
+use aoc::registers;
 
 
 fn main() {
@@ -10,11 +10,6 @@ fn main() {
 
 
     let data = aoc::read_file(fp);
-
-
-    let node_map = recursive_circus::build_node_map(&data);
-
-    let result = recursive_circus::find_root(&node_map);
-
+    let result = registers::execute(data.lines().map(|line| registers::Instruction::from_string(line)).collect());
     println!("{:?}", result);
 }
