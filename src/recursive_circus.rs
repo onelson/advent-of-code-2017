@@ -188,7 +188,7 @@ A (77) -> B   ";
     #[test]
     #[should_panic]
     fn test_panics_if_program_not_in_tree2() {
-        let node_map = build_node_map(&TEST_INPUT);
+        let _ = build_node_map(&TEST_INPUT);
         assert_eq!(find_parent("F", &vec![]), None);
     }
 }
