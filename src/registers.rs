@@ -28,6 +28,13 @@
 //! What is the largest value in any register after completing the instructions in your puzzle
 //! input?
 //!
+//! --- Part Two ---
+//!
+//! To be safe, the CPU also needs to know the highest value held in any register during this
+//! process so that it can decide how much memory to allocate to these operations. For example,
+//! in the above instructions, the highest value ever held was 10 (in register c after the third
+//! instruction was evaluated).
+//!
 
 use std::collections::BTreeMap;
 
@@ -113,24 +120,30 @@ fn check_guard(guard: &Guard, registers: &Registers) -> bool {
     }
 }
 
-fn update(instruction: &Instruction, registers: &mut Registers) {
-    *registers.entry(instruction.key.clone()).or_insert(0) += match instruction.op {
+fn update(instruction: &Instruction, registers: &mut Registers, peak: i32) -> i32 {
+    let key = instruction.key.clone();
+    *registers.entry(key.clone()).or_insert(0) += match instruction.op {
         Op::Inc => instruction.value,
         Op::Dec => -instruction.value,
     };
+    peak.max(registers[&key])
 }
 
-pub fn execute(instructions: Vec<Instruction>) -> i32 {
+/// returns a tuple of (highest current register, peak register)
+/// where peak is just whatever the highest (at any point during
+/// execution) value was.
+pub fn execute(instructions: Vec<Instruction>) -> (i32, i32) {
     let mut registers = Registers::new();
+    let mut peak = 0;
 //    println!();
     for instruction in &instructions {
 //        println!("{:?}", instruction);
         if check_guard(&instruction.guard, &mut registers) {
-            update(instruction, &mut registers);
+            peak = update(instruction, &mut registers, peak);
         }
     }
 //    println!("{:?}", registers);
-    registers.values().max().expect("max value").to_owned()
+    (registers.values().max().expect("max value").to_owned(), peak)
 }
 
 #[cfg(test)]
